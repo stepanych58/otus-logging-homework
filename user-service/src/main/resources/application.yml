@@ -1,0 +1,63 @@
+spring:
+  h2:
+    console:
+      enabled: true
+  aot:
+    enabled: true
+  jpa:
+    open-in-view: false
+    database-platform: org.hibernate.dialect.H2Dialect
+  datasource:
+    driver-class-name: org.h2.Driver
+    password:
+    username: sa
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+  application:
+    name: user-service
+
+logging:
+  structured:
+    format:
+      console: logstash
+  level:
+    org.zalando.logbook: TRACE
+
+logbook:
+  predicate:
+    include:
+      - path: /**
+        methods:
+          - GET
+          - POST
+    exclude:
+      - path: /actuator/**
+        methods:
+          - GET
+          - POST
+      - path: /swagger-ui/**
+        methods:
+          - GET
+          - POST
+      - path: /v3/api-docs/**
+        methods:
+          - GET
+          - POST
+  filter.enabled: true
+  format.style: JSON
+  minimum-status: 400
+
+management:
+  endpoints:
+    health:
+      show-details: always
+    web.exposure.include: health,prometheus,info
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram.http.server.requests: true
+      slo:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 300ms, 400ms, 500ms, 600ms, 800ms

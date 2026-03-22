@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-config
+  namespace: {{ .Values.namespace }}
+data:
+  fluent-bit.conf: |
+    [SERVICE]
+        Flush        1
+        Log_Level    debug
+        Parsers_File parsers.conf
+    
+    [INPUT]
+        Name tail
+        Path /var/log/containers/*.log
+        Tag kube.*
+        Parser docker_no_time
+        Docker_Mode On
+        Skip_Long_Lines On
+
+    [FILTER]
+        Name kubernetes
+        Match kube.*
+        K8S-Logging.Parser On
+        K8S-Logging.Exclude On
+        Merge_Log On
+        Keep_Log Off
+
+    [OUTPUT]
+        Name es
+        Match *
+        Type  _doc
+        Logstash_Format On
+        Logstash_Prefix ersin-fluntbit
+        Retry_Limit False
+        Host elasticsearch.logging.svc.cluster.local
+        Port 9200
+        Index fluent-bit
+        Suppress_Type_Name On
+        Generate_ID On
+        Retry_Limit False
+        Trace_Error On
+        Replace_Dots On
+  parsers.conf: |
+    [PARSER]
+        Name docker_no_time
+        Format json
+        Time_Keep Off
+        Time_Key time
+        Time_Format %Y-%m-%dT%H:%M:%S.%L

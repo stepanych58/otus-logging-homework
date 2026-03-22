@@ -1,0 +1,31 @@
+{{- if .Values.apiCaller.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.appName }}-api-caller
+  namespace: {{ .Values.projectNamespace }}
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: curl
+          image: curlimages/curl:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              while true; do
+                curl -X POST \
+                  'http://userservice-user-service-chart.otus-msa:80/user-service/api/users' \
+                  -H 'accept: */*' \
+                  -H 'Content-Type: application/json' \
+                  -d '{
+                    "email": "test@example.com",
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "gender": true,
+                    "password": "123456"
+                  }';
+                sleep 10;
+              done
+  {{- end }}
