@@ -31,7 +31,7 @@ data:
         Match *
         Type  _doc
         Logstash_Format On
-        Logstash_Prefix ersin-fluntbit
+        Logstash_Prefix logs-fluntbit
         Retry_Limit False
         Host elasticsearch.logging.svc.cluster.local
         Port 9200
