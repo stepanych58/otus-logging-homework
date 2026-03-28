@@ -137,4 +137,3 @@ kubectl logs <pod-name> -n <namespace>
 ```bash
 kubectl rollout restart daemonset <daemonset-name> -n <namespace>
 ```
-kubectl rollout restart daemonset fluent-bit
